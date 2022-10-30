@@ -1,15 +1,14 @@
 <template>
   <div id="main-wrapper">
     <div id="title">List of notes</div>
-    <button @click="setDefaultValues()">Set Default Values</button>
+    <button @click="setValues(default_note_ids)">Set Default Values</button>
     <div id="notes-wrapper">
       <div v-for="(note, index) in notes" :key="index" class="note">
         <span class="note-name">{{ note.name }}</span>
-        <button @click="handleApproveClick(index)">Edit</button>
         <button @click="handleDeleteClick(index)">Delete</button>
       </div>
       <input v-model="name" />
-      <button @click="handleAddClick(index)">Add</button>
+      <button @click="handleAddClick()">Add</button>
     </div>
   </div>
 </template>
@@ -27,10 +26,10 @@ interface someObject {
 
 export default defineComponent({
   setup() {
-    const name = ref('x');
-    const last_key = ref('y');
-    const auto_increment = ref('y');
-    const defaultNoteIds = ref([
+    const name = ref('');
+    const last_key = ref('1');
+    const auto_increment = ref(0);
+    const default_note_ids = ref([
       { id: 'note_1' },
       { id: 'note_2' },
       { id: 'note_3' },
@@ -49,9 +48,18 @@ export default defineComponent({
     onMounted(() => {
       getNotes();
     });
-    const handleAddClick = (index: any) => {
-      name.value;
-      window.localStorage.setItem('notes', JSON.stringify(notes.value));
+    const handleAddClick = () => {
+      if (name.value !== '') {
+        auto_increment.value = parseInt(last_key.value.match(/\d+/)) + 1;
+        last_key.value = 'note_' + auto_increment.value;
+        setToLocalStorage(last_key.value, {
+          id: last_key.value,
+          name: name.value,
+        });
+        note_ids.value.push({ id: last_key.value });
+        setValues(note_ids.value);
+        name.value = '';
+      }
     };
     const handleDeleteClick = (index: any) => {
       Object.entries(note_ids.value).forEach((entry) => {
@@ -64,8 +72,9 @@ export default defineComponent({
       notes.value.splice(index, 1);
       setToLocalStorage('notes', note_ids.value);
     };
-    const setDefaultValues = () => {
-      setToLocalStorage('notes', defaultNoteIds.value);
+    const setValues = (values: someArray) => {
+      console.log(values);
+      setToLocalStorage('notes', values);
       defaultNotes.value.forEach((element, item) => {
         Object.entries(element).forEach((entry) => {
           const [key, value] = entry;
@@ -82,7 +91,7 @@ export default defineComponent({
 
         let note = getFromLocalStorage(value.id); //JSON.parse(localStorage.getItem(value.id) ?? '[]');
         notes.value.push(note);
-        auto_increment.value = value.id;
+        last_key.value = value.id;
       });
     };
     const getFromLocalStorage = (key: string) => {
@@ -100,7 +109,8 @@ export default defineComponent({
       handleDeleteClick,
       handleAddClick,
       note_ids,
-      setDefaultValues,
+      setValues,
+      default_note_ids,
     };
   },
 });
