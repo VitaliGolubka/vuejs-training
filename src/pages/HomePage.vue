@@ -73,7 +73,6 @@ export default defineComponent({
       setToLocalStorage('notes', note_ids.value);
     };
     const setValues = (values: someArray) => {
-      console.log(values);
       setToLocalStorage('notes', values);
       defaultNotes.value.forEach((element, item) => {
         Object.entries(element).forEach((entry) => {
