@@ -14,6 +14,6 @@
 
 <script>
 export default {
-  name: 'modalForPage',
+  name: 'ModalForPage',
 };
 </script>

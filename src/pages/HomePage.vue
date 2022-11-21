@@ -9,6 +9,10 @@
     <div>
       <input v-model="new_name_note" />
       <button @click="addNote()">Add</button>
+      <div v-for="(new_todo, index) in new_todos" :key="index" class="note">
+        <input v-model="new_name_todo" />
+      </div>
+      <button @click="addTodo()">Add</button>
     </div>
     <div id="notes-wrapper">
       <div v-for="(note, index) in notes" :key="index" class="note">
@@ -29,13 +33,13 @@
       </div>
     </div>
   </div>
-  <Modal></Modal>
+  <ModalForPage></ModalForPage>
 </template>
 
 <script lang="ts">
 import { defineComponent, ref, onMounted, computed } from 'vue';
 
-import modal from './../components/Modal.vue';
+import ModalForPage from './../components/Modal.vue';
 
 interface someArray {
   [key: string]: string;
@@ -46,10 +50,11 @@ interface someObject {
 }
 
 export default defineComponent({
-  components: { modal },
+  components: { ModalForPage },
   setup() {
     const open_modal = ref(false);
     const new_name_note = ref('');
+    const new_todos = ref(['']);
     const delete_index = ref(0);
     const last_key = ref('1');
     const auto_increment = computed(
@@ -100,6 +105,7 @@ export default defineComponent({
       getNotes();
     });
     const openPopupForDelete = (index: any) => {
+      console.log(open_modal);
       open_modal.value = true;
       delete_index.value = index;
     };
@@ -115,6 +121,10 @@ export default defineComponent({
         updateNotes(note_ids.value);
         new_name_note.value = '';
       }
+    };
+    const addTodo = () => {
+      new_todos.value.push('');
+      console.log(1);
     };
     const deleteNote = (index: any) => {
       Object.entries(note_ids.value).forEach((entry) => {
@@ -176,6 +186,7 @@ export default defineComponent({
     };
     return {
       new_name_note,
+      new_todos,
       notes,
       note_ids,
       default_note_ids,
@@ -183,6 +194,7 @@ export default defineComponent({
       delete_index,
       deleteNote,
       addNote,
+      addTodo,
       setDefaultValues,
       openPopupForDelete,
     };
